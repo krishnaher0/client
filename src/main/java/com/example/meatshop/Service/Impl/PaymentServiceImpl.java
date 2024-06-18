@@ -19,6 +19,7 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public void saveData(PaymentPojo paymentPojo) {
         Payment payment=new Payment();
+
         payment.setPaymentDate(paymentPojo.getPaymentDate());
 //        payment.setOrderId(paymentPojo.getOrderId());
         payment.setCustomerId(paymentPojo.getCustomerId());
@@ -45,24 +46,22 @@ public class PaymentServiceImpl implements PaymentService {
     public void updateData(Integer id, PaymentPojo paymentPojo) {
         Optional<Payment> paymentOptional = paymentRepo.findById(id);
         if (paymentOptional.isPresent()) {
-            Payment existingPayment= paymentOptional.get();
-
+            Payment existingPayment = paymentOptional.get();
             updatePayment(existingPayment, paymentPojo);
             paymentRepo.save(existingPayment);
         } else {
-
-            throw new IllegalArgumentException("Items with ID " + id + " not found");
+            throw new IllegalArgumentException("Item with ID " + id + " not found");
         }
     }
+
     private void updatePayment(Payment existingPayment, PaymentPojo paymentPojo) {
-        if (existingPayment.getPaymentId()!= null) {
+        if (existingPayment.getPaymentId() != null) {
             existingPayment.setCustomerId(paymentPojo.getCustomerId());
             existingPayment.setPaymentDate(paymentPojo.getPaymentDate());
-//            existingPayment.setOrderId(paymentPojo.getOrderId());
+            // existingPayment.setOrderId(paymentPojo.getOrderId());
+        } else {
+            throw new IllegalArgumentException("Payment ID is null for item with ID " );
         }
-        throw new IllegalArgumentException("Items with ID " +" not found");
-
-
     }
 
     @Override

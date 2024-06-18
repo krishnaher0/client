@@ -15,6 +15,7 @@ import java.time.LocalDate;
 @Table(name="Payment")
 public class Payment {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer paymentId;
 
     @Column(name="PaymentDate")

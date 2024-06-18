@@ -1,5 +1,7 @@
 package com.example.meatshop.Pojo;
 
+import com.example.meatshop.Entity.MeatCategory;
+import com.example.meatshop.Entity.Order;
 import jakarta.persistence.Column;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
@@ -17,6 +19,9 @@ public class ItemsPojo {
     private Integer id;
 
     private Integer price;
-    private String productName;
-    private String description;
+    private String itemName;
+    private String itemDetails;
+    private MeatCategory categoryId;
+    private Order order;
+
 }

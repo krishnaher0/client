@@ -1,11 +1,11 @@
 package com.example.meatshop.Controller;
 
 import com.example.meatshop.Entity.Customer;
-import com.example.meatshop.Entity.Items;
+import com.example.meatshop.Entity.Order;
 import com.example.meatshop.Pojo.CustomerPojo;
-import com.example.meatshop.Pojo.ItemsPojo;
+import com.example.meatshop.Pojo.OrderPojo;
 import com.example.meatshop.Service.CustomerService;
-import com.example.meatshop.Service.ItemService;
+import com.example.meatshop.Service.OrderService;
 import com.example.meatshop.Shared.GlobalApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -14,18 +14,20 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+@ResponseBody
 @RequiredArgsConstructor
-@RestController
-@RequestMapping("/items")
 
-public class ItemsController {
-    private final ItemService itemService;
+@RestController
+@RequestMapping("/orders")
+
+public class OrderController {
+    private final OrderService orderService;
     @GetMapping(value = "/get", produces = "application/json")
-    public GlobalApiResponse<List<Items>> getData() {
-        List<Items> items = itemService.getAll();
+    public GlobalApiResponse<List<Order>> getData() {
+        List<Order> order = orderService.getAll();
         return GlobalApiResponse
-                .<List<Items>>builder()
-                .data(items)
+                .<List<Order>>builder()
+                .data(order)
                 .statusCode(200)
                 .message("Data retrieved successfully!")
                 .build();
@@ -34,30 +36,31 @@ public class ItemsController {
 
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<String> update(@PathVariable Integer id, @RequestBody ItemsPojo itemsPojo) {
-        if (!itemService.existsById(id.intValue())) {
+    public ResponseEntity<String> update(@PathVariable Integer id, @RequestBody OrderPojo orderPojo) {
+        if (!orderService.existsById(id.intValue())) {
             return new ResponseEntity<>("Customer id" + id + " not found", HttpStatus.NOT_FOUND);
         } else {
-            itemService.updateData(id, itemsPojo);
+            orderService.updateData(id, orderPojo);
 
         }
         return ResponseEntity.ok("Student with ID " + id + " updated successfully");
     }
 
     @PostMapping("/save")
-    public ResponseEntity<?> save(@RequestBody ItemsPojo itemsPojo) {
+    public ResponseEntity<?> save(@RequestBody OrderPojo orderPojo) {
+        // Add validation or logging here if necessary
 
-        itemService.saveData(itemsPojo);
+        orderService.saveData(orderPojo);
         return ResponseEntity.ok("Notices saved successfully");
     }
     @GetMapping("/get/{id}")
-    public Optional<Items> getData(@PathVariable Integer id) {
+    public Optional<Order> getData(@PathVariable Integer id) {
         System.out.println("Hello");
-        return itemService.findById(id.longValue());
+        return orderService.findById(id.longValue());
     }
 
     @DeleteMapping("/delete/{id}")
     public void delete(@PathVariable Integer id) {
-        this.itemService.deleteById(id.longValue());
+        this.orderService.deleteById(id.longValue());
     }
 }

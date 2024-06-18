@@ -1,9 +1,6 @@
 package com.example.meatshop.Entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,6 +11,7 @@ import lombok.Setter;
 @Table(name="Items")
 public class Items {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
     @Column(name="Item Name")
     private String itemName;
@@ -21,9 +19,16 @@ public class Items {
     @Column(name="price")
     private Integer price;
 
-    @Column(name="ProductDetails")
-    private String productDetails;
+    @ManyToOne
+    @JoinColumn(name="categoryId")
+    private MeatCategory categoryId;
 
+    @Column(name="ItemDetails")
+    private String itemDetails;
+
+    @ManyToOne
+    @JoinColumn(name = "order_id")
+    private Order order;
 
 
 

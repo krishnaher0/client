@@ -35,7 +35,7 @@ public class PaymentController {
 
     @PutMapping("/update/{id}")
     public ResponseEntity<String> update(@PathVariable Integer id, @RequestBody PaymentPojo paymentPojo) {
-        if (!paymentService.existsById(id.intValue())) {
+        if (!paymentService.existsById(id)) {
             return new ResponseEntity<>("Payment id" + id + " not found", HttpStatus.NOT_FOUND);
         } else {
             paymentService.updateData(id, paymentPojo);
@@ -46,11 +46,7 @@ public class PaymentController {
 
     @PostMapping("/save")
     public ResponseEntity<?> save(@RequestBody PaymentPojo paymentPojo) {
-        // Add validation or logging here if necessary
-        if (paymentPojo.getPaymentId() == null) {
-            // Handle the missing student_id case
-            return ResponseEntity.badRequest().body("Customer Id ID is required");
-        }
+
         paymentService.saveData(paymentPojo);
         return ResponseEntity.ok("Notices saved successfully");
     }

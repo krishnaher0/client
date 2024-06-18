@@ -17,9 +17,10 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public void saveData(ItemsPojo itemsPojo) {
         Items items=new Items();
-        items.setItemName(itemsPojo.getProductName());
+        items.setCategoryId(itemsPojo.getCategoryId());
+        items.setItemName(itemsPojo.getItemName());
         items.setPrice(itemsPojo.getPrice());
-        items.setProductDetails(items.getProductDetails());
+        items.setItemDetails(itemsPojo.getItemDetails());
         itemsRepo.save(items);
 
     }
@@ -54,9 +55,9 @@ public class ItemServiceImpl implements ItemService {
     }
     private void updateCategory(Items existingItems, ItemsPojo itemsPojo) {
         if (itemsPojo.getId()!= null) {
-            existingItems.setItemName(itemsPojo.getProductName());
+            existingItems.setItemName(itemsPojo.getItemName());
             existingItems.setPrice(itemsPojo.getPrice());
-            existingItems.setProductDetails(existingItems.getProductDetails());
+            existingItems.setItemDetails(existingItems.getItemDetails());
         }
         throw new IllegalArgumentException("Items with ID " +" not found");
 

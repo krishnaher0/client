@@ -46,11 +46,7 @@ public class CategoryController {
 
     @PostMapping("/save")
     public ResponseEntity<?> save(@RequestBody CategoryPojo categoryPojo) {
-        // Add validation or logging here if necessary
-        if (categoryPojo.getId() == null) {
-            // Handle the missing student_id case
-            return ResponseEntity.badRequest().body("Customer Id ID is required");
-        }
+
         categoryService.saveData(categoryPojo);
         return ResponseEntity.ok("Notices saved successfully");
     }

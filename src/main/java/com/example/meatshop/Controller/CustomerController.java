@@ -46,10 +46,7 @@ public class CustomerController {
     @PostMapping("/save")
     public ResponseEntity<?> save(@RequestBody CustomerPojo customerPojo) {
         // Add validation or logging here if necessary
-        if (customerPojo.getCustomerId() == null) {
-            // Handle the missing student_id case
-            return ResponseEntity.badRequest().body("Customer Id ID is required");
-        }
+
         customerService.addCustomer(customerPojo);
         return ResponseEntity.ok("Notices saved successfully");
     }
