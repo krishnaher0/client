@@ -41,27 +41,28 @@ public class ItemServiceImpl implements ItemService {
         return itemsRepo.findById(id.intValue());
     }
 
+    @Override
     public void updateData(Integer id, ItemsPojo itemsPojo) {
         Optional<Items> itemsOptional = itemsRepo.findById(id);
         if (itemsOptional.isPresent()) {
             Items existingItems = itemsOptional.get();
-
-            updateCategory(existingItems, itemsPojo);
-
+            // Update the existing student with the data from studentPojo
+            updateStudentProperties(existingItems, itemsPojo);
+            itemsRepo.save(existingItems); // Save the updated student
         } else {
-            throw new IllegalArgumentException("Items with ID " + id + " not found");
+            // Handle the case where the student with the given ID does not exist
+            throw new IllegalArgumentException("Student with ID " + id + " not found");
         }
     }
 
-    private void updateCategory(Items existingItems, ItemsPojo itemsPojo) {
-        if (itemsPojo.getId() != null) {
-            existingItems.setItemName(itemsPojo.getItemName());
-            existingItems.setPrice(itemsPojo.getPrice());
-            existingItems.setItemDetails(itemsPojo.getItemDetails());
-        } else {
-            throw new IllegalArgumentException("ItemsPojo ID cannot be null");
-        }
+    // Helper method to update properties of Student based on StudentPojo
+    private void updateStudentProperties(Items student, ItemsPojo studentPojo) {
+        student.setItemName(studentPojo.getItemName());
+        student.setItemDetails(studentPojo.getItemDetails());
+        student.setCategoryId(studentPojo.getCategoryId());
+        itemsRepo.save(student);
     }
+
 
 
     @Override
