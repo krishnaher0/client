@@ -1,8 +1,6 @@
 package com.example.meatshop.Pojo;
 
 import com.example.meatshop.Entity.MeatCategory;
-import com.example.meatshop.Entity.Order;
-import jakarta.persistence.Column;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -22,6 +20,5 @@ public class ItemsPojo {
     private String itemName;
     private String itemDetails;
     private MeatCategory categoryId;
-    private Order order;
 
 }

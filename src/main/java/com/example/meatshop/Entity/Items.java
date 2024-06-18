@@ -26,9 +26,6 @@ public class Items {
     @Column(name="ItemDetails")
     private String itemDetails;
 
-    @ManyToOne
-    @JoinColumn(name = "order_id")
-    private Order order;
 
 
 
