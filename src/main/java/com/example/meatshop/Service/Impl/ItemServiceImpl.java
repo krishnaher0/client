@@ -47,22 +47,22 @@ public class ItemServiceImpl implements ItemService {
             Items existingItems = itemsOptional.get();
 
             updateCategory(existingItems, itemsPojo);
-            itemsRepo.save(existingItems);
-        } else {
 
+        } else {
             throw new IllegalArgumentException("Items with ID " + id + " not found");
         }
     }
+
     private void updateCategory(Items existingItems, ItemsPojo itemsPojo) {
-        if (itemsPojo.getId()!= null) {
+        if (itemsPojo.getId() != null) {
             existingItems.setItemName(itemsPojo.getItemName());
             existingItems.setPrice(itemsPojo.getPrice());
-            existingItems.setItemDetails(existingItems.getItemDetails());
+            existingItems.setItemDetails(itemsPojo.getItemDetails());
+        } else {
+            throw new IllegalArgumentException("ItemsPojo ID cannot be null");
         }
-        throw new IllegalArgumentException("Items with ID " +" not found");
-
-
     }
+
 
     @Override
     public boolean existsById(Integer id) {
