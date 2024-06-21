@@ -18,7 +18,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 
 
-public class CategoryServiceImpl implements CategoryService {
+public class  CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepo categoryRepo;
     @Override
