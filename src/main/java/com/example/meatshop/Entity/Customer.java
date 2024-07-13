@@ -5,6 +5,13 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 
 @Entity
@@ -13,7 +20,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Customer {
+public class Customer  {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer customerId;
@@ -30,6 +37,19 @@ public class Customer {
     @Column(name="contact")
     private String contactNo;
 
+    @Column
+    private String username;
+
+    @Column(name="Password")
+    private String password;
+
+    @ManyToMany
+    @JoinTable(
+            name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "customerId"),
+            inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id")
+    )
+    private List<Role> roles = new ArrayList<>();
 
 
 }

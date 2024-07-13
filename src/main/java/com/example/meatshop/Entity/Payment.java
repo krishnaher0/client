@@ -1,33 +1,35 @@
 package com.example.meatshop.Entity;
-
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
-@Getter
-@Setter
+
+@Table
 @Entity
-@RequiredArgsConstructor
-@AllArgsConstructor
-@Table(name="Payment")
+@Setter
+@Getter
 public class Payment {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer paymentId;
-
-    @Column(name="PaymentDate")
-     private LocalDate paymentDate;
-
-//    @OneToOne
-//    @JoinColumn(name="Price")
-//    private Order orderId;
+    private Integer id;
 
     @ManyToOne
-    @JoinColumn(name="CustomerId")
-    private Customer customerId;
+    @JoinColumn
+    private Customer customer;
 
-
+    @ManyToOne
+    @JoinColumn
+    private Items items;
+    @Column(
+            name = "Type"
+    )
+    private String type;
+    @Column(
+            name = "Amount"
+    )
+    private String amount;
+    @Column(
+            name = "Date"
+    )
+    private LocalDate date;
 }

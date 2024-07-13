@@ -49,10 +49,7 @@ public class ItemServiceImpl implements ItemService {
             // Update the existing student with the data from studentPojo
             updateStudentProperties(existingItems, itemsPojo);
             itemsRepo.save(existingItems); // Save the updated student
-//        } else {
-//            // Handle the case where the student with the given ID does not exist
-//            throw new IllegalArgumentException("Student with ID " + id + " not found");
-//        }
+
     }
 
     // Helper method to update properties of Student based on StudentPojo

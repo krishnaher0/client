@@ -11,19 +11,26 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-@RequiredArgsConstructor
 @Service
+@RequiredArgsConstructor
 
 public class PaymentServiceImpl implements PaymentService {
     private final PaymentRepo paymentRepo;
     @Override
-    public void saveData(PaymentPojo paymentPojo) {
+    public void addPayment(PaymentPojo paymentPojo) {
         Payment payment=new Payment();
-
-        payment.setPaymentDate(paymentPojo.getPaymentDate());
-//        payment.setOrderId(paymentPojo.getOrderId());
-        payment.setCustomerId(paymentPojo.getCustomerId());
+        payment.setAmount(paymentPojo.getAmount());
+        payment.setType(paymentPojo.getType());
+        payment.setDate(paymentPojo.getDate());
+        payment.setItems(paymentPojo.getItems());
+        payment.setId(paymentPojo.getId());
+        payment.setCustomer(paymentPojo.getCustomer());
         paymentRepo.save(payment);
+    }
+
+    @Override
+    public void deleteById(Integer id) {
+        paymentRepo.deleteById(id);
 
     }
 
@@ -33,39 +40,35 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public void deleteById(Long id) {
-        paymentRepo.deleteById(id.intValue());
-
+    public Optional<Payment> findById(Integer id) {
+        return paymentRepo.findById(id);
     }
+
 
     @Override
-    public Optional<Payment> findById(Long id) {
-        return paymentRepo.findById(id.intValue());
-    }
-
     public void updateData(Integer id, PaymentPojo paymentPojo) {
         Optional<Payment> paymentOptional = paymentRepo.findById(id);
-        if (paymentOptional.isPresent()) {
-            Payment existingPayment = paymentOptional.get();
-            updatePayment(existingPayment, paymentPojo);
-            paymentRepo.save(existingPayment);
-        } else {
-            throw new IllegalArgumentException("Item with ID " + id + " not found");
-        }
+//        if (itemsOptional.isPresent()) {
+        Payment existingPayment = paymentOptional.get();
+        // Update the existing student with the data from studentPojo
+        updateStudentProperties(existingPayment, paymentPojo);
+        paymentRepo.save(existingPayment); // Save the updated student
+
     }
 
-    private void updatePayment(Payment existingPayment, PaymentPojo paymentPojo) {
-        if (existingPayment.getPaymentId() != null) {
-            existingPayment.setCustomerId(paymentPojo.getCustomerId());
-            existingPayment.setPaymentDate(paymentPojo.getPaymentDate());
-            // existingPayment.setOrderId(paymentPojo.getOrderId());
-        } else {
-            throw new IllegalArgumentException("Payment ID is null for item with ID " );
-        }
+    // Helper method to update properties of Student based on StudentPojo
+    private void updateStudentProperties(Payment payment, PaymentPojo paymentPojo) {
+        payment.setAmount(paymentPojo.getAmount());
+        payment.setType(paymentPojo.getType());
+        payment.setDate(paymentPojo.getDate());
+        payment.setItems(paymentPojo.getItems());
+        payment.setId(paymentPojo.getId());
+        payment.setCustomer(paymentPojo.getCustomer());
+        paymentRepo.save(payment);
     }
 
     @Override
     public boolean existsById(Integer id) {
-        return paymentRepo.existsById(id.intValue());
+        return paymentRepo.existsById(id);
     }
 }

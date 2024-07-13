@@ -1,15 +1,13 @@
 package com.example.meatshop.Controller;
 
-import com.example.meatshop.Entity.Customer;
 import com.example.meatshop.Entity.Payment;
-import com.example.meatshop.Pojo.CustomerPojo;
 import com.example.meatshop.Pojo.PaymentPojo;
-import com.example.meatshop.Service.CustomerService;
 import com.example.meatshop.Service.PaymentService;
 import com.example.meatshop.Shared.GlobalApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,7 +18,7 @@ import java.util.Optional;
 
 public class PaymentController {
     private final PaymentService paymentService;
-    @GetMapping(value = "/get", produces = "application/json")
+    @GetMapping("/get")
     public GlobalApiResponse<List<Payment>> getData() {
         List<Payment> payments = paymentService.getAll();
         return GlobalApiResponse
@@ -47,17 +45,17 @@ public class PaymentController {
     @PostMapping("/save")
     public ResponseEntity<?> save(@RequestBody PaymentPojo paymentPojo) {
 
-        paymentService.saveData(paymentPojo);
+        paymentService.addPayment(paymentPojo);
         return ResponseEntity.ok("Notices saved successfully");
     }
     @GetMapping("/get/{id}")
     public Optional<Payment> getData(@PathVariable Integer id) {
-        System.out.println("Hello");
-        return paymentService.findById(id.longValue());
+
+        return paymentService.findById(id);
     }
 
     @DeleteMapping("/delete/{id}")
     public void delete(@PathVariable Integer id) {
-        this.paymentService.deleteById(id.longValue());
+        this.paymentService.deleteById(id);
     }
 }
