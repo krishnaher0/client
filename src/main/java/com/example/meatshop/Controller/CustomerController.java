@@ -30,8 +30,6 @@ public class CustomerController {
                 .build();
     }
 
-
-
     @PutMapping("/update/{id}")
     public ResponseEntity<String> update(@PathVariable Integer id, @RequestBody CustomerPojo customerPojo) {
         if (!customerService.existsById(id.intValue())) {
