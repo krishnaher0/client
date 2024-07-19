@@ -1,5 +1,6 @@
 package com.example.meatshop.Controller;
 
+
 import com.example.meatshop.Entity.Customer;
 import com.example.meatshop.Entity.Role;
 import com.example.meatshop.Pojo.AuthResponsePojo;
@@ -15,12 +16,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -40,25 +39,24 @@ public class AuthController {
         this.jwtGenerator = jwtGenerator;
     }
 
-@PostMapping("/login")
-public ResponseEntity<AuthResponsePojo> login(@RequestBody CustomerPojo loginPojo) {
-    try {
+    @PostMapping("/login")
+    public ResponseEntity<AuthResponsePojo> login(@RequestBody CustomerPojo loginPojo) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginPojo.getUsername(), loginPojo.getPassword())
         );
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        String token = jwtGenerator.generateToken(authentication);
-        System.out.println("Generated Token: " + token); // Check if token is generated correctly
-        return new ResponseEntity<>(new AuthResponsePojo(token), HttpStatus.OK);
-    } catch (AuthenticationException e) {
-        e.printStackTrace(); // Log the specific authentication error
-        return new ResponseEntity<>(new AuthResponsePojo(null), HttpStatus.UNAUTHORIZED);
+        String token = jwtGenerator.generateToken(loginPojo.getUsername());
+
+        Customer user = customerRepo.findByUsername(loginPojo.getUsername()).orElseThrow();
+        List<String> roles = user.getRoles().stream().map(Role::getName).toList();
+
+        AuthResponsePojo response = new AuthResponsePojo(token, user.getCustomerId(), roles);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
-}
 
     @PostMapping("/register/user")
-    public ResponseEntity<String> registerUser(@RequestBody CustomerPojo registerPojo) {
-        if (customerRepo.existsByUsername(registerPojo.getUsername())) {
+    public ResponseEntity<String> registerUser(@RequestBody CustomerPojo registerPojo){
+        if(customerRepo.existsByUsername(registerPojo.getUsername())){
             return new ResponseEntity<>("Username is taken", HttpStatus.BAD_REQUEST);
         }
 
@@ -66,23 +64,17 @@ public ResponseEntity<AuthResponsePojo> login(@RequestBody CustomerPojo loginPoj
         user.setCustomerId(registerPojo.getCustomerId());
         user.setUsername(registerPojo.getUsername());
         user.setPassword(passwordEncoder.encode(registerPojo.getPassword()));
-        user.setAddress(registerPojo.getAddress());
-        user.setEmail(registerPojo.getEmail());
-        user.setContactNo(registerPojo.getContactNo());
-        user.setCustomerName(registerPojo.getCustomerName());
 
         Optional<Role> role = roleRepository.findByName("USER");
-        if (role.isPresent()) {
+        if(role.isPresent()) {
             user.setRoles(Collections.singletonList(role.get()));
         } else {
             return new ResponseEntity<>("Role not found", HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         customerRepo.save(user);
-        return new ResponseEntity<>("USER registered successfully", HttpStatus.OK);
+        return new ResponseEntity<>("User registered successfully", HttpStatus.OK);
     }
-
-
 
     @PostMapping("/register/admin")
     public ResponseEntity<String> register(@RequestBody CustomerPojo registerPojo){
@@ -94,11 +86,6 @@ public ResponseEntity<AuthResponsePojo> login(@RequestBody CustomerPojo loginPoj
         user.setCustomerId(registerPojo.getCustomerId());
         user.setUsername(registerPojo.getUsername());
         user.setPassword(passwordEncoder.encode(registerPojo.getPassword()));
-        user.setAddress(registerPojo.getAddress());
-        user.setEmail(registerPojo.getEmail());
-        user.setContactNo(registerPojo.getContactNo());
-        user.setCustomerName(registerPojo.getCustomerName());
-
 
         Optional<Role> role = roleRepository.findByName("ADMIN");
         if(role.isPresent()) {
@@ -110,47 +97,30 @@ public ResponseEntity<AuthResponsePojo> login(@RequestBody CustomerPojo loginPoj
         customerRepo.save(user);
         return new ResponseEntity<>("ADMIN registered successfully", HttpStatus.OK);
     }
-//
-//    @PostMapping("/update/password/{username}")
-//    public ResponseEntity<String> updatePassword(@PathVariable String username, @RequestBody String newPassword) {
-//        // Find the user by username
-//        Optional<Customer> optionalUser = customerRepo.findByUsername(username);
-//
-//        if (optionalUser.isEmpty()) {
-//            return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
-//        }
-//
-//        // Update password
-//        Customer user = optionalUser.get();
-//        user.setPassword(passwordEncoder.encode(newPassword));
-//        customerRepo.save(user);
-//
-//        return new ResponseEntity<>("Password updated successfully", HttpStatus.OK);
-//    }
-//
-//    @PostMapping("/authenticate")
-//    public ResponseEntity<String> authenticate(@RequestBody CustomerPojo request) {
-//        try {
-//            Authentication authentication = authenticationManager.authenticate(
-//                    new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
-//            );
-//            String token = jwtGenerator.generateToken(authentication);
-//            return ResponseEntity.ok(token); // Return token as part of the response body
-//        } catch (AuthenticationException e) {
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build(); // Return 401 if authentication fails
-//        }
-//    }
-//
-//
-//    @GetMapping("/secured")
-//    public ResponseEntity<String> securedEndpoint(@RequestHeader("Authorization") String token) {
-//        if (!jwtGenerator.validateToken(token)) {
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid or expired token");
-//        }
-//
-//        String username = jwtGenerator.getUsernameFromJwt(token);
-//        // Use username for secure endpoint logic
-//
-//        return ResponseEntity.ok("Hello, " + username + "! This is a secured endpoint.");
-//    }
+
+    @PostMapping("/authenticate")
+    public ResponseEntity<String> authenticate(@RequestBody CustomerPojo request) {
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
+            );
+            String token = jwtGenerator.generateToken(request.getUsername());
+            return ResponseEntity.ok(token);
+        } catch (AuthenticationException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+    }
+
+
+    @GetMapping("/secured")
+    public ResponseEntity<String> securedEndpoint(@RequestHeader("Authorization") String token) {
+        if (!jwtGenerator.validateToken(token)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid or expired token");
+        }
+
+        String username = jwtGenerator.getUsernameFromJwt(token);
+        // Use username for secure endpoint logic
+
+        return ResponseEntity.ok("Hello, " + username + "! This is a secured endpoint.");
+    }
 }
