@@ -19,10 +19,7 @@ import java.io.IOException;
 public class ImageController {
 
     private static final Logger logger = LoggerFactory.getLogger(ImageController.class);
-
-
     private final StorageService storageService;
-
 
     @PostMapping("/fileSystem")
     public ResponseEntity<?> uploadImageToFileSystem(@RequestParam("images") MultipartFile file) {
