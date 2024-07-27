@@ -48,7 +48,14 @@ public class ContactController {
                 .data("Message sent successfully")
                 .build(), HttpStatus.OK);
     }
-
+    @GetMapping("/count")
+    public GlobalApiResponse<Long> getContactCount() {
+        return GlobalApiResponse.<Long>builder()
+                .data(contactService.ContactCount())
+                .statusCode(200)
+                .message("Total home count retrieved successfully!")
+                .build();
+    }
     @GetMapping
     public ResponseEntity<GlobalApiResponse<List<Contact>>> getAllMessages() {
         List<Contact> contacts = contactService.getAllMessages();
