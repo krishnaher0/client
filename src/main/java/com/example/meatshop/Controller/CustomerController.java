@@ -30,6 +30,14 @@ public class CustomerController {
                 .build();
     }
 
+    @GetMapping("/count")
+    public GlobalApiResponse<Long> getCustomerCount() {
+        return GlobalApiResponse.<Long>builder()
+                .data(customerService.CustomerCount())
+                .statusCode(200)
+                .message("Total home count retrieved successfully!")
+                .build();
+    }
     @PutMapping("/update/{id}")
     public ResponseEntity<String> update(@PathVariable Integer id, @RequestBody CustomerPojo customerPojo) {
         if (!customerService.existsById(id.intValue())) {
