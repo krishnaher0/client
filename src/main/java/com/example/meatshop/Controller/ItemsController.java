@@ -9,9 +9,12 @@ import com.example.meatshop.Service.ItemService;
 import com.example.meatshop.Shared.GlobalApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 @RequiredArgsConstructor
@@ -30,34 +33,94 @@ public class ItemsController {
                 .message("Data retrieved successfully!")
                 .build();
     }
-
-
-
-    @PutMapping("/update/{id}")
-    public ResponseEntity<String> update(@PathVariable Integer id, @RequestBody ItemsPojo itemsPojo) {
-        if (!itemService.existsById(id.intValue())) {
-            return new ResponseEntity<>("Customer id" + id + " not found", HttpStatus.NOT_FOUND);
-        } else {
-            itemService.updateData(id, itemsPojo);
-
-        }
-        return ResponseEntity.ok("Student with ID " + id + " updated successfully");
+    @GetMapping("/count")
+    public GlobalApiResponse<Long> getItemsCount() {
+        return GlobalApiResponse.<Long>builder()
+                .data(itemService.ItemCount())
+                .statusCode(200)
+                .message("Total home count retrieved successfully!")
+                .build();
     }
 
-    @PostMapping("/save")
-    public ResponseEntity<?> save(@RequestBody ItemsPojo itemsPojo) {
+    @PutMapping(value = "/update/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public GlobalApiResponse<Items> updateData(@PathVariable Integer id,
+                                                      @RequestPart("items") Items itemsDetails,
+                                                      @RequestPart(value = "image", required = false) MultipartFile image) {
+        try {
+            itemService.updateData(Long.valueOf(id), itemsDetails, image);
+            Items updatedHome = itemService.findById(Long.valueOf(id)).orElse(null);
+            return GlobalApiResponse.<Items>builder()
+                    .data(updatedHome)
+                    .statusCode(200)
+                    .message("Destination updated successfully!")
+                    .build();
+        } catch (IOException e) {
+            return GlobalApiResponse.<Items>builder()
+                    .statusCode(500)
+                    .message("Failed to process image!")
+                    .build();
+        }
+    }
 
-        itemService.saveData(itemsPojo);
-        return ResponseEntity.ok("Notices saved successfully");
+    @PostMapping(value="/save",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public GlobalApiResponse<Items> createDestination(@RequestPart("items")Items items,
+                                                             @RequestPart("image") MultipartFile image) {
+        try{
+            itemService.addProducts(items,image);
+            return GlobalApiResponse.<Items>builder()
+                    .data(items)
+                    .statusCode(201)
+                    .message("Home created successfully!")
+                    .build();
+        } catch (IOException e) {
+            return GlobalApiResponse.<Items>builder()
+                    .statusCode(500)
+                    .message("Failed to process image!")
+                    .build();
+        }
     }
     @GetMapping("/get/{id}")
-    public Optional<Items> getData(@PathVariable Integer id) {
-        System.out.println("Hello");
-        return itemService.findById(id.longValue());
+    public GlobalApiResponse<Items> getData(@PathVariable Long id) {
+        Optional<Items> destinations = itemService.findById(id);
+        if (destinations.isPresent()) {
+            return GlobalApiResponse.<Items>builder()
+                    .data(destinations.get())
+                    .statusCode(200)
+                    .message("Building retrieved successfully!")
+                    .build();
+        } else {
+            return GlobalApiResponse.<Items>builder()
+                    .statusCode(404)
+                    .message("Building not found!")
+                    .build();
+        }
     }
 
     @DeleteMapping("/delete/{id}")
-    public void delete(@PathVariable Integer id) {
-        this.itemService.deleteById(id.longValue());
+    public GlobalApiResponse<Void> delete(@PathVariable Long id) {
+        if (!itemService.existsById(id.intValue())) {
+            return GlobalApiResponse.<Void>builder()
+                    .statusCode(404)
+                    .message("Ground with ID " + id + " not found")
+                    .build();
+        }
+
+        itemService.deleteById(id);
+
+        return GlobalApiResponse.<Void>builder()
+                .statusCode(200)
+                .message("destination with ID " + id + " deleted successfully")
+                .build();
+    }
+    @GetMapping("/image/{id}")
+    public ResponseEntity<byte[]> getHomeImage(@PathVariable Integer id) {
+        try {
+            byte[] imageData = itemService.getProductImage(id.longValue());
+            return ResponseEntity.ok()
+                    .contentType(MediaType.IMAGE_JPEG)
+                    .body(imageData);
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 }
