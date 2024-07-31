@@ -75,4 +75,13 @@ public class CustomerServiceImpl implements CustomerService {
     public boolean existsById(Integer id) {
        return customerRepo.existsById(id.intValue());
     }
+    @Override
+    public Customer getCustomerById(Long id) {
+        return customerRepo.findById(Math.toIntExact(id)).orElse(null);
+    }
+
+    @Override
+    public Long CustomerCount() {
+        return customerRepo.count();
+    }
 }

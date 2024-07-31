@@ -18,4 +18,6 @@ public interface CustomerService {
 
     Optional<Customer> findById(Integer id);
     boolean existsById(Integer id);
+    Customer getCustomerById(Long id);
+    Long CustomerCount();
 }

@@ -2,6 +2,7 @@ package com.example.meatshop.Controller;
 
 import com.example.meatshop.Pojo.PaymentDetailsPojo;
 import com.example.meatshop.Service.PaymentDetailsService;
+import com.example.meatshop.Shared.GlobalApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,5 +27,13 @@ public class PaymentDetailsController {
     public ResponseEntity<List<PaymentDetailsPojo>> getAllPayments() {
         List<PaymentDetailsPojo> paymentDetailsList = paymentService.getAllPayments();
         return ResponseEntity.ok(paymentDetailsList);
+    }
+    @GetMapping("/count")
+    public GlobalApiResponse<Long> getPaymentCount() {
+        return GlobalApiResponse.<Long>builder()
+                .data(paymentService.paymentCount())
+                .statusCode(200)
+                .message("Total home count retrieved successfully!")
+                .build();
     }
 }

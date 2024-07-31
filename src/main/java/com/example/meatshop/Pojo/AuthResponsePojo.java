@@ -1,14 +1,14 @@
 package com.example.meatshop.Pojo;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
+@AllArgsConstructor
 public class AuthResponsePojo {
     private String accessToken;
-    private String tokenType="Bearer";
-
-    public AuthResponsePojo(String accessToken) {
-        this.accessToken = accessToken;
-
-    }
+    private Integer userId;
+    private List<String> roles;
 }

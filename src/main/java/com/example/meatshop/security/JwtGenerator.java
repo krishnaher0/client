@@ -12,20 +12,30 @@ import java.util.Date;
 @Component
 public class JwtGenerator {
 
-    public String generateToken(Authentication authentication) {
-        String username = authentication.getName();
+    public String generateToken(String username) {
         Date currentDate = new Date();
         long expireTimeInMillis = currentDate.getTime() + SecurityConstants.JWT_EXPIRATION;
         Date expireDate = new Date(expireTimeInMillis);
 
-        String token = Jwts.builder()
+        return Jwts.builder()
                 .setSubject(username)
                 .setIssuedAt(currentDate)
                 .setExpiration(expireDate)
                 .signWith(SignatureAlgorithm.HS256, SecurityConstants.JWT_SECRET)
                 .compact();
+    }
 
-        return token;
+    public String generateRefreshToken(String username) {
+        Date currentDate = new Date();
+        long expireTimeInMillis = currentDate.getTime() + SecurityConstants.JWT_REFRESH_EXPIRATION;
+        Date expireDate = new Date(expireTimeInMillis);
+
+        return Jwts.builder()
+                .setSubject(username)
+                .setIssuedAt(currentDate)
+                .setExpiration(expireDate)
+                .signWith(SignatureAlgorithm.HS256, SecurityConstants.JWT_SECRET)
+                .compact();
     }
 
     public String getUsernameFromJwt(String token) {

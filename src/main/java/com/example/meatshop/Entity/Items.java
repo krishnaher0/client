@@ -19,12 +19,12 @@ public class Items {
     @Column(name="price")
     private Integer price;
 
-    @ManyToOne
-    @JoinColumn(name="categoryId")
-    private MeatCategory categoryId;
-
     @Column(name="ItemDetails")
     private String itemDetails;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "file_data_id", referencedColumnName = "id")
+    private FileData imageData;
 
 
 
